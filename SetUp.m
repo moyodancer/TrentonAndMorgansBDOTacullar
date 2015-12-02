@@ -4,7 +4,7 @@
 
 %% Set up for simulink
 %clear all
-ecc = .00;
+ecc = .001;
 a = 7800; %km
 inc = 42; %degrees
 raan = 10; %degrees
