@@ -1,17 +1,19 @@
-%% Assignment 2
+%% Final
 %Aero 560
-%Morgan Yost
+%Morgan Yost and Trent Voris
 
 %% Set up for simulink
 %clear all
-ecc = 0;
-a = 42000; %km
-inc = 0; %degrees
-raan = 0; %degrees
-omega = 0; %degrees
-theta =  180;
+ecc = .00;
+a = 7800; %km
+inc = 42; %degrees
+raan = 10; %degrees
+omega = 22; %degrees
+theta =  0;
 mu = 398600; %km^2 something
 [rvect,vvect]=COES2rvd(a,ecc,inc,raan, omega, theta);
+R_0 = rvect;
+V_0 = vvect;
 x = [1 0 0];
 y = [0 1 0];
 z = [0 0 1];
@@ -23,10 +25,13 @@ Q= [i_hat j_hat k_hat]; %inertial to lvlh
 DCM = [dot(x, i_hat) dot(x, j_hat) dot(x, k_hat);
        dot(y, i_hat) dot(y, j_hat) dot(y, k_hat);
        dot(z, i_hat) dot(z, j_hat) dot(z, k_hat)];
-w =[.5e-7; 7.27e-7; 3e-7]; %rad/sec in body frame
+w =[5*pi/180; 0; -2*pi/180]; %rad/sec in body frame
 wbn0 = DCM*w; %body to inertial assuming body is aligned with lvlh to start
 %initial euler angles in ECI assuming s/c starts aligned with LVLH
-J = [3500 0 0; 0 3200 0; 0 0 2500]; %kg m^2
+m = 6.5;
+r = .15;
+h = .5;
+J = [(1/12)*(3*r^2 +4*h^2) 0 0; 0 (1/12)*(3*r^2 +4*h^2) 0; 0 0 .5*m*r^2]; %kg m^2
 Jinv = inv(J);
 T = 2*pi*sqrt(a^3/mu); %sec
 tprop = T; %one period
@@ -40,7 +45,7 @@ kd = J*2*zeta*nf;
 kp = J*2*nf^2;
 n= 1/T;
 %% Run Simulink
-sim('satPropWThrusterControl');
+sim('Bdot');
 %% Make Plots
 close all
 figure(1)
