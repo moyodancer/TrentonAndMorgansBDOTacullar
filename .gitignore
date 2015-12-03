@@ -3,3 +3,4 @@ satPropWThrusterControlLinear.slx
 *.m~
 *.slx~
 html/
+*.autosave
