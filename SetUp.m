@@ -5,7 +5,7 @@
 %% Set up for simulink
 %clear all
 ecc = .001;
-a = 7800; %km
+a = 7000; %km
 inc = 42; %degrees
 raan = 10; %degrees
 omega = 22; %degrees
@@ -31,10 +31,11 @@ wbn0 =DCM*w; %body to inertial assuming body is aligned with lvlh to start
 m = 6.5;
 r = .15;
 h = .5;
-J = [(1/12)*(3*r^2 +4*h^2) 0 0; 0 (1/12)*(3*r^2 +4*h^2) 0; 0 0 .5*m*r^2]; %kg m^2
+J = [(1/12)*m*h^2 0 0 ; 0 (1/12)*m*h^2 0; 0 0 .5*m*r^2];
+%J = [(1/12)*(3*r^2 +4*h^2) 0 0; 0 (1/12)*(3*r^2 +4*h^2) 0; 0 0 .5*m*r^2]; %kg m^2
 Jinv = inv(J);
 T = 2*pi*sqrt(a^3/mu); %sec
-tprop = T; %one period
+tprop = 4*T; %one period
 q = DCM2quat(DCM);
 eta0 = q(1);
 epsilon0 = q(2:4);
@@ -44,8 +45,15 @@ nf = log(.02)/(ts*zeta);
 kd = J*2*zeta*nf;
 kp = J*2*nf^2;
 n= 1/T;
+rw = .5;
+mw = .5;
+capOmega = 500*2*pi/60;
+Tcy = [0 kd(2,2)*(.5*mw*rw^2)*capOmega 0];
 %% Run Simulink
-sim('satPropWThrusterControl');
+TcON = 1;
+TcyON = 0;
+sim('BDot');
+%sim('satPropWThrusterControl');
 %% Make Plots
 %{
 close all
