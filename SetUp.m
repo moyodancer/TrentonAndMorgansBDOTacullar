@@ -4,7 +4,7 @@
 
 %% Set up for simulink
 %clear all
-ecc = .00;
+ecc = .001;
 a = 7800; %km
 inc = 42; %degrees
 raan = 10; %degrees
@@ -26,7 +26,7 @@ DCM = [dot(x, i_hat) dot(x, j_hat) dot(x, k_hat);
        dot(y, i_hat) dot(y, j_hat) dot(y, k_hat);
        dot(z, i_hat) dot(z, j_hat) dot(z, k_hat)];
 w =[5*pi/180; 0; -2*pi/180]; %rad/sec in body frame
-wbn0 = DCM*w; %body to inertial assuming body is aligned with lvlh to start
+wbn0 =DCM*w; %body to inertial assuming body is aligned with lvlh to start
 %initial euler angles in ECI assuming s/c starts aligned with LVLH
 m = 6.5;
 r = .15;
@@ -40,13 +40,14 @@ eta0 = q(1);
 epsilon0 = q(2:4);
 ts = 30; %s
 zeta  = .65;
-nf = -log(.02)/(ts*zeta);
+nf = log(.02)/(ts*zeta);
 kd = J*2*zeta*nf;
 kp = J*2*nf^2;
 n= 1/T;
 %% Run Simulink
-sim('Bdot');
+sim('satPropWThrusterControl');
 %% Make Plots
+%{
 close all
 figure(1)
 hold on
@@ -101,4 +102,4 @@ fprintf('they are typically .5 N thrusters and a %f Nm torque would \n',...
     max(Tc.data(1:len,2)));
 fprintf('be reasonable\n');
 
-
+%}
