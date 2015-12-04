@@ -35,24 +35,27 @@ J = [(1/12)*m*h^2 0 0 ; 0 (1/12)*m*h^2 0; 0 0 .5*m*r^2];
 %J = [(1/12)*(3*r^2 +4*h^2) 0 0; 0 (1/12)*(3*r^2 +4*h^2) 0; 0 0 .5*m*r^2]; %kg m^2
 Jinv = inv(J);
 T = 2*pi*sqrt(a^3/mu); %sec
-tprop = 4*T; %one period
+tprop = T; %one period
 q = DCM2quat(DCM);
 eta0 = q(1);
 epsilon0 = q(2:4);
-ts = 30; %s
+ts = 300; %s
 zeta  = .65;
 nf = log(.02)/(ts*zeta);
-kd = J*2*zeta*nf;
-kp = J*2*nf^2;
+kd = -J*2*zeta*nf;
+kp = -J*2*nf^2;
 n= 1/T;
 rw = .5;
 mw = .5;
 capOmega = 500*2*pi/60;
 Tcy = [0 kd(2,2)*(.5*mw*rw^2)*capOmega 0];
+mT1 = [1 1 1]';
+mT2 = [0 1 0]';
+mT3 = [0 0 1]';
 %% Run Simulink
-TcON = 1;
+TcON = -1;
 TcyON = 0;
-sim('BDot');
+sim('BDot2');
 %sim('satPropWThrusterControl');
 %% Make Plots
 %{
