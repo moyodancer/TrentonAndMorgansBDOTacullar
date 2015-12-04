@@ -42,8 +42,8 @@ epsilon0 = q(2:4);
 ts = 300; %s
 zeta  = .65;
 nf = log(.02)/(ts*zeta);
-kd = -J*2*zeta*nf;
-kp = -J*2*nf^2;
+kd = 100000000*J*2*zeta*nf
+kp = J*2*nf^2;
 n= 1/T;
 rw = .5;
 mw = .5;
@@ -53,9 +53,10 @@ mT1 = [1 1 1]';
 mT2 = [0 1 0]';
 mT3 = [0 0 1]';
 %% Run Simulink
+tol = [.5e-5 .5e-5 .5e-5];
 TcON = -1;
 TcyON = 0;
-sim('BDot2');
+sim('BDot3');
 %sim('satPropWThrusterControl');
 %% Make Plots
 %{
