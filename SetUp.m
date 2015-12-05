@@ -4,16 +4,18 @@
 
 %% Set up for simulink
 %clear all
-ecc = .001;
-a = 7000; %km
-inc = 42; %degrees
-raan = 10; %degrees
-omega = 22; %degrees
-theta =  0;
+ecc = .0028232;
+a = 6378+750; %km
+inc = 81.1442; %degrees
+raan = 340.4579; %degrees
+omega = 325.0288; %degrees
+theta =  130.436;
 mu = 398600; %km^2 something
 [rvect,vvect]=COES2rvd(a,ecc,inc,raan, omega, theta);
 R_0 = rvect;
 V_0 = vvect;
+h = cross(rvect, vvect);
+hy = h(2);
 x = [1 0 0];
 y = [0 1 0];
 z = [0 0 1];
@@ -35,7 +37,10 @@ J = [(1/12)*m*h^2 0 0 ; 0 (1/12)*m*h^2 0; 0 0 .5*m*r^2];
 %J = [(1/12)*(3*r^2 +4*h^2) 0 0; 0 (1/12)*(3*r^2 +4*h^2) 0; 0 0 .5*m*r^2]; %kg m^2
 Jinv = inv(J);
 T = 2*pi*sqrt(a^3/mu); %sec
-tprop = T; %one period
+Roll = atand(DCM(2,3)/DCM(3,3));
+Pitch = -asind(DCM(1,3));
+Yaw = atand(DCM(1,2)/DCM(1,1));
+euler0 = [Roll Pitch Yaw]';
 q = DCM2quat(DCM);
 eta0 = q(1);
 epsilon0 = q(2:4);
@@ -43,6 +48,7 @@ ts = 300; %s
 zeta  = .65;
 nf = log(.02)/(ts*zeta);
 kd = 100000000*J*2*zeta*nf
+kdPoint = kd./[1 1 1; 1 10000000 1; 1 1 1]';
 kp = J*2*nf^2;
 n= 1/T;
 rw = .5;
@@ -53,9 +59,11 @@ mT1 = [1 1 1]';
 mT2 = [0 1 0]';
 mT3 = [0 0 1]';
 %% Run Simulink
+tprop = 4*T; %one period
 tol = [.5e-5 .5e-5 .5e-5];
 TcON = -1;
 TcyON = 0;
+Td = 0;
 sim('BDot3');
 %sim('satPropWThrusterControl');
 %% Make Plots
