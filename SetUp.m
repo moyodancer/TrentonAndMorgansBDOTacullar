@@ -14,7 +14,6 @@ mu = 398600; %km^2 something
 [rvect,vvect]=COES2rvd(a,ecc,inc,raan, omega, theta);
 R_0 = rvect;
 V_0 = vvect;
-poop=2;
 h = cross(rvect, vvect);
 hy = h(2);
 x = [1 0 0];
